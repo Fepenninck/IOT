@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<title>Fotosensor para Controle de Luz</title>
+
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background: #0f172a;
+    color: white;
+    text-align: center;
+    padding-top: 40px;
+}
+
+.card {
+    background: #1e293b;
+    padding: 24px;
+    border-radius: 14px;
+    width: 380px;
+    margin: auto;
+    box-shadow: 0 15px 35px rgba(0,0,0,.45);
+}
+
+.lampada {
+    width: 160px;
+    height: 160px;
+    border-radius: 50%;
+    margin: 25px auto;
+    background: radial-gradient(circle, #fff59d, #facc15);
+    opacity: 0.1;
+    transition: all .4s ease;
+}
+
+.barra {
+    width: 320px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="card">
+    <h2>Fotosensor para Controle de Luz</h2>
+
+    <p>
+        Sistema automático que ajusta a intensidade do LED
+        conforme a luminosidade do ambiente (LDR).
+    </p>
+
+    <div id="lampada" class="lampada"></div>
+
+    <input id="barra" class="barra" type="range" min="0" max="100" disabled>
+
+    <p>LDR: <span id="ldr">--</span></p>
+    <p>Potência do LED: <span id="potencia">--</span>%</p>
+</div>
+
+<script>
+const lampada = document.getElementById("lampada");
+const ldrSpan = document.getElementById("ldr");
+const potSpan = document.getElementById("potencia");
+const barra = document.getElementById("barra");
+
+//atualiza brilho
+function atualizarLampada(potencia) {
+    const intensidade = potencia / 100;
+
+    lampada.style.opacity = Math.max(0.08, intensidade);
+    lampada.style.boxShadow =
+        `0 0 ${30 + potencia}px rgba(255,223,0,${intensidade})`;
+}
+
+// loop de atualização
+async function atualizar() {
+    try {
+        const r = await fetch("http://localhost:5000/status");
+        const d = await r.json();
+
+        atualizarLampada(d.potencia_led);
+
+        ldrSpan.textContent = d.ldr;
+        potSpan.textContent = d.potencia_led;
+        barra.value = d.potencia_led;
+
+    } catch (e) {
+        console.error("Erro:", e);
+    }
+}
+
+setInterval(atualizar, 500);
+atualizar();
+</script>
+
+</body>
+</html>
