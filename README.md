@@ -1,6 +1,5 @@
 # IOT
-Fotosensor para Controle de Luz 
-Rodar esses comandos para funcionar!
+Comandos para funcionar!
 pip install flask
 pip install flask flask-cors
 python index.py
